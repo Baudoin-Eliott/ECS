@@ -150,6 +150,7 @@ namespace ECS {
      */
     class Entity {
     private:
+
         Manager* manager = nullptr;
         EntityID id = 0;
         bool active = true;

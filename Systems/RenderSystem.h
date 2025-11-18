@@ -75,7 +75,7 @@ public:
             // Définir le flip
             SDL_FlipMode flip = SDL_FLIP_NONE;
             if (sprite.flipHorizontal && sprite.flipVertical) {
-                flip = SDL_FLIP_HORIZONTAL | SDL_FLIP_VERTICAL;
+                flip = (SDL_FlipMode) (SDL_FLIP_HORIZONTAL | SDL_FLIP_VERTICAL);
             }
             else if (sprite.flipHorizontal) {
                 flip = SDL_FLIP_HORIZONTAL;
@@ -116,4 +116,4 @@ public:
     void onEntityRemoved(ECS::Entity* entity) override {
         // Optionnel: nettoyage si nécessaire
     }
-};
+}; 

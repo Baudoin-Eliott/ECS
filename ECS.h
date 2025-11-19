@@ -4,12 +4,12 @@
  * ============================================================================
  * ECS - Entity Component System
  * ============================================================================
- * Un système ECS générique et performant pour vos projets de jeux 2D
+ * Un systï¿½me ECS gï¿½nï¿½rique et performant pour vos projets de jeux 2D
  *
  * Architecture:
  * - Entity: Simple ID qui contient des composants
- * - Component: Données pures (struct/class)
- * - System: Logique qui opère sur les entités ayant certains composants
+ * - Component: Donnï¿½es pures (struct/class)
+ * - System: Logique qui opï¿½re sur les entitï¿½s ayant certains composants
  *
  * Usage:
  *   #include "ECS.h"
@@ -48,16 +48,16 @@ namespace ECS {
     // ID unique pour chaque type de composant
     using ComponentID = std::size_t;
 
-    // ID unique pour chaque entité
+    // ID unique pour chaque entitï¿½
     using EntityID = std::size_t;
 
-    // Nombre maximum de composants différents (peut être augmenté si nécessaire)
+    // Nombre maximum de composants diffï¿½rents (peut ï¿½tre augmentï¿½ si nï¿½cessaire)
     constexpr std::size_t MAX_COMPONENTS = 64;
 
-    // Bitset pour savoir quels composants une entité possède (rapide et efficace)
+    // Bitset pour savoir quels composants une entitï¿½ possï¿½de (rapide et efficace)
     using ComponentBitSet = std::bitset<MAX_COMPONENTS>;
 
-    // Array pour accéder rapidement aux composants par leur ID
+    // Array pour accï¿½der rapidement aux composants par leur ID
     using ComponentArray = std::array<Component*, MAX_COMPONENTS>;
 
     // ========================================================================
@@ -65,8 +65,8 @@ namespace ECS {
     // ========================================================================
 
     /*
-     * Les Layers permettent de grouper les entités pour un filtrage rapide
-     * Une entité peut appartenir à plusieurs layers simultanément
+     * Les Layers permettent de grouper les entitï¿½s pour un filtrage rapide
+     * Une entitï¿½ peut appartenir ï¿½ plusieurs layers simultanï¿½ment
      *
      * Exemple d'utilisation:
      *   enum class GameLayer {
@@ -86,9 +86,9 @@ namespace ECS {
     // ========================================================================
 
     /*
-     * Génère un ID unique pour chaque TYPE de composant
-     * Utilise std::type_index pour garantir l'unicité même entre différentes
-     * unités de compilation (résout le problème des static dans les templates)
+     * Gï¿½nï¿½re un ID unique pour chaque TYPE de composant
+     * Utilise std::type_index pour garantir l'unicitï¿½ mï¿½me entre diffï¿½rentes
+     * unitï¿½s de compilation (rï¿½sout le problï¿½me des static dans les templates)
      */
     namespace Internal {
         inline ComponentID getUniqueComponentID() {
@@ -104,8 +104,8 @@ namespace ECS {
     }
 
     /*
-     * Récupère l'ID d'un type de composant
-     * Crée un nouvel ID si c'est la première fois qu'on voit ce type
+     * Rï¿½cupï¿½re l'ID d'un type de composant
+     * Crï¿½e un nouvel ID si c'est la premiï¿½re fois qu'on voit ce type
      */
     template <typename T>
     inline ComponentID getComponentTypeID() {
@@ -126,16 +126,16 @@ namespace ECS {
 
     /*
      * Classe de base pour tous les composants
-     * Les composants sont de simples données avec quelques hooks optionnels
+     * Les composants sont de simples donnï¿½es avec quelques hooks optionnels
      */
     class Component {
     public:
-        Entity* entity = nullptr;  // Référence vers l'entité propriétaire
+        Entity* entity = nullptr;  // Rï¿½fï¿½rence vers l'entitï¿½ propriï¿½taire
 
-        // Hooks du cycle de vie (optionnels, override si nécessaire)
-        virtual void init() {}      // Appelé après ajout à l'entité
-        virtual void update() {}    // Appelé chaque frame (si vous n'utilisez pas de Systems)
-        virtual void draw() {}      // Appelé pour le rendu (si vous n'utilisez pas de Systems)
+        // Hooks du cycle de vie (optionnels, override si nï¿½cessaire)
+        virtual void init() {}      // Appelï¿½ aprï¿½s ajout ï¿½ l'entitï¿½
+        virtual void update() {}    // Appelï¿½ chaque frame (si vous n'utilisez pas de Systems)
+        virtual void draw() {}      // Appelï¿½ pour le rendu (si vous n'utilisez pas de Systems)
 
         virtual ~Component() = default;
     };
@@ -145,8 +145,8 @@ namespace ECS {
     // ========================================================================
 
     /*
-     * Une entité est simplement un conteneur de composants avec un ID unique
-     * Elle ne contient pas de logique, juste des données (composants)
+     * Une entitï¿½ est simplement un conteneur de composants avec un ID unique
+     * Elle ne contient pas de logique, juste des donnï¿½es (composants)
      */
     class Entity {
     private:
@@ -193,8 +193,8 @@ namespace ECS {
         // ====================================================================
 
         /*
-         * Un tag est un identifiant unique (string) pour cette entité
-         * Utile pour retrouver rapidement des entités spécifiques (Player, Boss, etc.)
+         * Un tag est un identifiant unique (string) pour cette entitï¿½
+         * Utile pour retrouver rapidement des entitï¿½s spï¿½cifiques (Player, Boss, etc.)
          */
         void setTag(const std::string& t) { tag = t; }
         const std::string& getTag() const { return tag; }
@@ -205,8 +205,8 @@ namespace ECS {
         // ====================================================================
 
         /*
-         * Les layers permettent de grouper les entités (une entité peut avoir plusieurs layers)
-         * Exemple: une entité peut être à la fois Enemy + Renderable + Collidable
+         * Les layers permettent de grouper les entitï¿½s (une entitï¿½ peut avoir plusieurs layers)
+         * Exemple: une entitï¿½ peut ï¿½tre ï¿½ la fois Enemy + Renderable + Collidable
          */
         void addLayer(Layer layer) {
             if (layer < MAX_LAYERS) {
@@ -231,7 +231,7 @@ namespace ECS {
         // ====================================================================
 
         /*
-         * Vérifie si l'entité possède un composant d'un certain type
+         * Vï¿½rifie si l'entitï¿½ possï¿½de un composant d'un certain type
          * Exemple: entity.hasComponent<TransformComponent>()
          */
         template<typename T>
@@ -240,10 +240,10 @@ namespace ECS {
         }
 
         /*
-         * Ajoute un composant à l'entité
+         * Ajoute un composant ï¿½ l'entitï¿½
          *
          * Template variadique: permet de passer n'importe quels arguments au constructeur
-         * Perfect forwarding: préserve les références et évite les copies inutiles
+         * Perfect forwarding: prï¿½serve les rï¿½fï¿½rences et ï¿½vite les copies inutiles
          *
          * Exemple:
          *   entity.addComponent<TransformComponent>(10.0f, 20.0f);
@@ -251,21 +251,21 @@ namespace ECS {
          */
         template <typename T, typename... TArgs>
         T& addComponent(TArgs&&... args) {
-            // Vérification: pas plus de MAX_COMPONENTS types différents
+            // Vï¿½rification: pas plus de MAX_COMPONENTS types diffï¿½rents
             ComponentID typeID = getComponentTypeID<T>();
             if (typeID >= MAX_COMPONENTS) {
                 throw std::runtime_error("MAX_COMPONENTS exceeded!");
             }
 
-            // Création du composant avec perfect forwarding des arguments
+            // Crï¿½ation du composant avec perfect forwarding des arguments
             T* component = new T(std::forward<TArgs>(args)...);
             component->entity = this;
 
-            // Stockage dans un unique_ptr pour gestion automatique de la mémoire
+            // Stockage dans un unique_ptr pour gestion automatique de la mï¿½moire
             std::unique_ptr<Component> uPtr{ component };
             components.emplace_back(std::move(uPtr));
 
-            // Enregistrement dans l'array d'accès rapide et le bitset
+            // Enregistrement dans l'array d'accï¿½s rapide et le bitset
             componentArray[typeID] = component;
             componentBitSet[typeID] = true;
 
@@ -276,8 +276,8 @@ namespace ECS {
         }
 
         /*
-         * Récupère un composant par son type
-         * ATTENTION: crash si le composant n'existe pas! Vérifiez avec hasComponent() avant
+         * Rï¿½cupï¿½re un composant par son type
+         * ATTENTION: crash si le composant n'existe pas! Vï¿½rifiez avec hasComponent() avant
          *
          * Exemple:
          *   if (entity.hasComponent<TransformComponent>()) {
@@ -291,7 +291,7 @@ namespace ECS {
         }
 
         /*
-         * Retire un composant de l'entité
+         * Retire un composant de l'entitï¿½
          */
         template<typename T>
         void removeComponent() {
@@ -317,8 +317,8 @@ namespace ECS {
     // ========================================================================
 
     /*
-     * Classe de base pour tous les systèmes
-     * Un système contient la logique qui opère sur les entités ayant certains composants
+     * Classe de base pour tous les systï¿½mes
+     * Un systï¿½me contient la logique qui opï¿½re sur les entitï¿½s ayant certains composants
      *
      * Exemple d'utilisation:
      *   class MovementSystem : public ECS::System {
@@ -340,16 +340,16 @@ namespace ECS {
     class System {
     protected:
         Manager* manager = nullptr;
-        ComponentBitSet componentSignature;  // Quels composants ce système requiert
-        std::vector<Entity*> entities;        // Entités qui matchent la signature
-        int priority = 0;                     // Ordre d'exécution (plus petit = exécuté en premier)
+        ComponentBitSet componentSignature;  // Quels composants ce systï¿½me requiert
+        std::vector<Entity*> entities;        // Entitï¿½s qui matchent la signature
+        int priority = 0;                     // Ordre d'exï¿½cution (plus petit = exï¿½cutï¿½ en premier)
 
     public:
         virtual ~System() = default;
 
         /*
-         * Déclare qu'un composant est requis pour ce système
-         * À appeler dans le constructeur de votre système
+         * Dï¿½clare qu'un composant est requis pour ce systï¿½me
+         * ï¿½ appeler dans le constructeur de votre systï¿½me
          */
         template<typename T>
         void requireComponent() {
@@ -358,7 +358,7 @@ namespace ECS {
         }
 
         /*
-         * Vérifie si une entité correspond à la signature de ce système
+         * Vï¿½rifie si une entitï¿½ correspond ï¿½ la signature de ce systï¿½me
          */
         bool matchesSignature(const Entity& entity) const {
             return (componentSignature & entity.componentBitSet) == componentSignature;
@@ -370,10 +370,10 @@ namespace ECS {
         int getPriority() const { return priority; }
 
         // Hooks du cycle de vie
-        virtual void init() {}                        // Appelé à l'ajout du système
-        virtual void update(float deltaTime) {}       // Appelé chaque frame
-        virtual void onEntityAdded(Entity* entity) {} // Appelé quand une entité matche
-        virtual void onEntityRemoved(Entity* entity) {} // Appelé quand une entité ne matche plus
+        virtual void init() {}                        // Appelï¿½ ï¿½ l'ajout du systï¿½me
+        virtual void update(float deltaTime) {}       // Appelï¿½ chaque frame
+        virtual void onEntityAdded(Entity* entity) {} // Appelï¿½ quand une entitï¿½ matche
+        virtual void onEntityRemoved(Entity* entity) {} // Appelï¿½ quand une entitï¿½ ne matche plus
 
         friend class Manager;
     };
@@ -383,8 +383,8 @@ namespace ECS {
     // ========================================================================
 
     /*
-     * Le Manager gère toutes les entités et systèmes
-     * C'est le point d'entrée principal de l'ECS
+     * Le Manager gï¿½re toutes les entitï¿½s et systï¿½mes
+     * C'est le point d'entrï¿½e principal de l'ECS
      */
     class Manager {
     private:
@@ -399,8 +399,8 @@ namespace ECS {
         // ====================================================================
 
         /*
-         * Crée une nouvelle entité
-         * Retourne une référence vers l'entité créée
+         * Crï¿½e une nouvelle entitï¿½
+         * Retourne une rï¿½fï¿½rence vers l'entitï¿½ crï¿½ï¿½e
          */
         Entity& createEntity() {
             auto entity = std::make_unique<Entity>(this, nextEntityID++);
@@ -410,7 +410,7 @@ namespace ECS {
         }
 
         /*
-         * Crée une entité avec un tag
+         * Crï¿½e une entitï¿½ avec un tag
          */
         Entity& createEntity(const std::string& tag) {
             Entity& entity = createEntity();
@@ -420,15 +420,15 @@ namespace ECS {
         }
 
         /*
-         * Récupère toutes les entités
+         * Rï¿½cupï¿½re toutes les entitï¿½s
          */
         const std::vector<std::unique_ptr<Entity>>& getEntities() const {
             return entities;
         }
 
         /*
-         * Récupère une entité par son tag
-         * Retourne nullptr si aucune entité n'a ce tag
+         * Rï¿½cupï¿½re une entitï¿½ par son tag
+         * Retourne nullptr si aucune entitï¿½ n'a ce tag
          */
         Entity* getEntityByTag(const std::string& tag) {
             auto it = taggedEntities.find(tag);
@@ -436,7 +436,7 @@ namespace ECS {
         }
 
         /*
-         * Récupère toutes les entités d'un layer spécifique
+         * Rï¿½cupï¿½re toutes les entitï¿½s d'un layer spï¿½cifique
          */
         std::vector<Entity*> getEntitiesByLayer(Layer layer) {
             std::vector<Entity*> result;
@@ -449,11 +449,11 @@ namespace ECS {
         }
 
         /*
-         * Supprime les entités marquées comme inactives
-         * À appeler à la fin de chaque frame
+         * Supprime les entitï¿½s marquï¿½es comme inactives
+         * ï¿½ appeler ï¿½ la fin de chaque frame
          */
         void refresh() {
-            // Mise à jour des systèmes avant suppression
+            // Mise ï¿½ jour des systï¿½mes avant suppression
             for (auto& system : systems) {
                 system->entities.erase(
                     std::remove_if(system->entities.begin(), system->entities.end(),
@@ -468,7 +468,7 @@ namespace ECS {
                 );
             }
 
-            // Suppression des entités inactives
+            // Suppression des entitï¿½s inactives
             entities.erase(
                 std::remove_if(entities.begin(), entities.end(),
                     [&](const std::unique_ptr<Entity>& entity) {
@@ -490,8 +490,8 @@ namespace ECS {
         // ====================================================================
 
         /*
-         * Ajoute un système au manager
-         * Les systèmes sont automatiquement triés par priorité
+         * Ajoute un systï¿½me au manager
+         * Les systï¿½mes sont automatiquement triï¿½s par prioritï¿½
          *
          * Exemple:
          *   manager.addSystem<MovementSystem>();
@@ -505,7 +505,7 @@ namespace ECS {
             std::unique_ptr<System> uPtr{ system };
             systems.emplace_back(std::move(uPtr));
 
-            // Tri par priorité (plus petit en premier)
+            // Tri par prioritï¿½ (plus petit en premier)
             std::sort(systems.begin(), systems.end(),
                 [](const std::unique_ptr<System>& a, const std::unique_ptr<System>& b) {
                     return a->getPriority() < b->getPriority();
@@ -516,39 +516,45 @@ namespace ECS {
         }
 
         /*
-         * Met à jour tous les systèmes
-         * À appeler chaque frame
+         * Met ï¿½ jour tous les systï¿½mes
+         * ï¿½ appeler chaque frame
          */
         void update(float deltaTime) {
-            // Mise à jour des entités dans les systèmes
+            // Mise ï¿½ jour des entitï¿½s dans les systï¿½mes
             updateSystemEntities();
 
-            // Mise à jour de tous les systèmes
+            // Mise ï¿½ jour de tous les systï¿½mes
             for (auto& system : systems) {
                 system->update(deltaTime);
             }
         }
 
         /*
-         * Met à jour les entités de chaque système selon leur signature
+         * Met ï¿½ jour les entitï¿½s de chaque systï¿½me selon leur signature
          */
         void updateSystemEntities() {
             for (auto& system : systems) {
+
+
+        
                 for (auto& entity : entities) {
                     if (entity->isActive() && system->matchesSignature(*entity)) {
-                        // Vérifier si l'entité n'est pas déjà dans le système
+                        // Vï¿½rifier si l'entitï¿½ n'est pas dï¿½jï¿½ dans le systï¿½me
                         auto it = std::find(system->entities.begin(), system->entities.end(), entity.get());
                         if (it == system->entities.end()) {
+                            
                             system->entities.push_back(entity.get());
                             system->onEntityAdded(entity.get());
                         }
                     }
                 }
+                
+    
             }
         }
 
         /*
-         * Récupère un système par son type
+         * Rï¿½cupï¿½re un systï¿½me par son type
          */
         template<typename T>
         T* getSystem() {

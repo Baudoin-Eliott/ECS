@@ -11,9 +11,9 @@ private:
 
 public:
     RenderSystem(SDL_Renderer* rend) : renderer(rend) {
-        requireComponent<TransformComponent>();
-        requireComponent<SpriteComponent>();
-    }
+    requireComponent<TransformComponent>();
+    requireComponent<SpriteComponent>();
+}
 
     void init() override {
         std::cout << "[RenderSystem] Initialized\n";
@@ -22,7 +22,11 @@ public:
     void update(float deltaTime) override {
         (void)deltaTime; // Éviter warning unused parameter
         
+    
+
         std::vector<ECS::Entity*> sortedEntities = getEntities();
+
+
 
         // Tri par renderLayer
         std::sort(sortedEntities.begin(), sortedEntities.end(),

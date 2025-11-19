@@ -6,17 +6,17 @@
 
 /*
  * ============================================================================
- * AnimationSystem - Met � jour les animations des sprites
+ * AnimationSystem - Met a jour les animations des sprites
  * ============================================================================
- * Ce syst�me met � jour les animations de toutes les entit�s qui ont:
+ * Ce systeme met a jour les animations de toutes les entités qui ont:
  * - SpriteComponent (pour changer le srcRect)
- * - AnimationComponent (pour conna�tre l'animation actuelle)
+ * - AnimationComponent (pour connaitre l'animation actuelle)
  *
  * Fonctionnement:
- * 1. V�rifie si assez de temps s'est �coul� pour changer de frame
- * 2. Incr�mente la frame actuelle
- * 3. Boucle ou arr�te selon la config de l'animation
- * 4. Met � jour le srcRect du SpriteComponent
+ * 1. Verifie si assez de temps s'est écoule pour changer de frame
+ * 2. Incrémente la frame actuelle
+ * 3. Boucle ou arrète selon la config de l'animation
+ * 4. Met a jour le srcRect du SpriteComponent
  *
  * Usage:
  *   AnimationSystem* animSys = manager.addSystem<AnimationSystem>(tileWidth, tileHeight);
@@ -33,7 +33,7 @@ public:
     /*
      * Constructeur
      *
-     * Param�tres:
+     * Paramètres:
      * - tileW: Largeur d'une frame/tile dans votre spritesheet
      * - tileH: Hauteur d'une frame/tile dans votre spritesheet
      *
@@ -41,7 +41,7 @@ public:
      */
     AnimationSystem(int tileW, int tileH)
         : tileWidth(tileW), tileHeight(tileH) {
-        // Ce syst�me requiert SpriteComponent et AnimationComponent
+        // Ce système requiert SpriteComponent et AnimationComponent
         requireComponent<SpriteComponent>();
         requireComponent<AnimationComponent>();
     }

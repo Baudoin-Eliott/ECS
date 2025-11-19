@@ -6,8 +6,8 @@
  * ============================================================================
  * Vector2D - Classe utilitaire pour les vecteurs 2D
  * ============================================================================
- * Fournit toutes les opérations mathématiques courantes sur les vecteurs 2D
- * Utilisé pour les positions, vélocités, directions, etc.
+ * Fournit toutes les opï¿½rations mathï¿½matiques courantes sur les vecteurs 2D
+ * Utilisï¿½ pour les positions, vï¿½locitï¿½s, directions, etc.
  *
  * Usage:
  *   Vector2D pos(10.0f, 20.0f);
@@ -26,7 +26,7 @@ public:
     // ========================================================================
 
     /*
-     * Constructeur par défaut: initialise à (0, 0)
+     * Constructeur par dï¿½faut: initialise ï¿½ (0, 0)
      */
     Vector2D() : x(0.0f), y(0.0f) {}
 
@@ -36,12 +36,12 @@ public:
     Vector2D(float x, float y) : x(x), y(y) {}
 
     // ========================================================================
-    // OPÉRATIONS DE BASE
+    // OPï¿½RATIONS DE BASE
     // ========================================================================
 
     /*
      * Addition de vecteurs
-     * Modifie le vecteur actuel et retourne une référence
+     * Modifie le vecteur actuel et retourne une rï¿½fï¿½rence
      */
     Vector2D& Add(const Vector2D& vec) {
         this->x += vec.x;
@@ -77,12 +77,12 @@ public:
     }
 
     // ========================================================================
-    // OPÉRATEURS ARITHMÉTIQUES (BINAIRES)
+    // OPï¿½RATEURS ARITHMï¿½TIQUES (BINAIRES)
     // ========================================================================
 
     /*
-     * Ces opérateurs permettent d'écrire: vec1 + vec2, vec1 - vec2, etc.
-     * Ils créent un nouveau vecteur (pas de modification en place)
+     * Ces opï¿½rateurs permettent d'ï¿½crire: vec1 + vec2, vec1 - vec2, etc.
+     * Ils crï¿½ent un nouveau vecteur (pas de modification en place)
      */
 
     friend Vector2D operator+(Vector2D v1, const Vector2D& v2) {
@@ -102,11 +102,11 @@ public:
     }
 
     // ========================================================================
-    // OPÉRATEURS D'ASSIGNATION COMPOSÉE
+    // OPï¿½RATEURS D'ASSIGNATION COMPOSï¿½E
     // ========================================================================
 
     /*
-     * Ces opérateurs permettent d'écrire: vec1 += vec2, vec1 -= vec2, etc.
+     * Ces opï¿½rateurs permettent d'ï¿½crire: vec1 += vec2, vec1 -= vec2, etc.
      * Ils modifient le vecteur actuel
      */
 
@@ -127,7 +127,7 @@ public:
     }
 
     // ========================================================================
-    // OPÉRATEURS AVEC SCALAIRES
+    // OPï¿½RATEURS AVEC SCALAIRES
     // ========================================================================
 
     /*
@@ -153,13 +153,13 @@ public:
     }
 
     // ========================================================================
-    // OPÉRATIONS UTILITAIRES
+    // OPï¿½RATIONS UTILITAIRES
     // ========================================================================
 
     /*
-     * Remet le vecteur à zéro (0, 0)
+     * Remet le vecteur ï¿½ zï¿½ro (0, 0)
      */
-    Vector2D& Zero() {
+    Vector2D& zero() {
         this->x = 0;
         this->y = 0;
         return *this;
@@ -173,7 +173,7 @@ public:
     }
 
     /*
-     * Calcule la magnitude au carré (plus rapide, évite le sqrt)
+     * Calcule la magnitude au carrï¿½ (plus rapide, ï¿½vite le sqrt)
      * Utile pour comparer des distances sans avoir besoin de la vraie magnitude
      */
     float MagnitudeSquared() const {
@@ -194,7 +194,7 @@ public:
     }
 
     /*
-     * Retourne une copie normalisée sans modifier le vecteur original
+     * Retourne une copie normalisï¿½e sans modifier le vecteur original
      */
     Vector2D Normalized() const {
         Vector2D result(*this);
@@ -219,7 +219,7 @@ public:
     }
 
     /*
-     * Calcule la distance au carré (plus rapide)
+     * Calcule la distance au carrï¿½ (plus rapide)
      */
     float DistanceSquared(const Vector2D& vec) const {
         float dx = x - vec.x;
@@ -228,7 +228,7 @@ public:
     }
 
     /*
-     * Limite la magnitude du vecteur à une valeur maximale
+     * Limite la magnitude du vecteur ï¿½ une valeur maximale
      * Utile pour limiter les vitesses
      */
     Vector2D& Limit(float max) {
@@ -242,7 +242,7 @@ public:
     }
 
     // ========================================================================
-    // OPÉRATEURS DE COMPARAISON
+    // OPï¿½RATEURS DE COMPARAISON
     // ========================================================================
 
     bool operator==(const Vector2D& vec) const {
@@ -272,7 +272,7 @@ public:
 
     static Vector2D Zero() { return Vector2D(0, 0); }
     static Vector2D One() { return Vector2D(1, 1); }
-    static Vector2D Up() { return Vector2D(0, -1); }      // Y négatif car SDL
+    static Vector2D Up() { return Vector2D(0, -1); }      // Y nï¿½gatif car SDL
     static Vector2D Down() { return Vector2D(0, 1); }
     static Vector2D Left() { return Vector2D(-1, 0); }
     static Vector2D Right() { return Vector2D(1, 0); }

@@ -2,21 +2,21 @@
 #include "../ECS.h"
 #include "../Components/SpriteComponent.h"
 #include "../Components/AnimationComponent.h"
-#include <SDL3/SDL.h>
+#include <SDL2/SDL.h>
 
 /*
  * ============================================================================
- * AnimationSystem - Met à jour les animations des sprites
+ * AnimationSystem - Met ï¿½ jour les animations des sprites
  * ============================================================================
- * Ce système met à jour les animations de toutes les entités qui ont:
+ * Ce systï¿½me met ï¿½ jour les animations de toutes les entitï¿½s qui ont:
  * - SpriteComponent (pour changer le srcRect)
- * - AnimationComponent (pour connaître l'animation actuelle)
+ * - AnimationComponent (pour connaï¿½tre l'animation actuelle)
  *
  * Fonctionnement:
- * 1. Vérifie si assez de temps s'est écoulé pour changer de frame
- * 2. Incrémente la frame actuelle
- * 3. Boucle ou arrête selon la config de l'animation
- * 4. Met à jour le srcRect du SpriteComponent
+ * 1. Vï¿½rifie si assez de temps s'est ï¿½coulï¿½ pour changer de frame
+ * 2. Incrï¿½mente la frame actuelle
+ * 3. Boucle ou arrï¿½te selon la config de l'animation
+ * 4. Met ï¿½ jour le srcRect du SpriteComponent
  *
  * Usage:
  *   AnimationSystem* animSys = manager.addSystem<AnimationSystem>(tileWidth, tileHeight);
@@ -33,7 +33,7 @@ public:
     /*
      * Constructeur
      *
-     * Paramètres:
+     * Paramï¿½tres:
      * - tileW: Largeur d'une frame/tile dans votre spritesheet
      * - tileH: Hauteur d'une frame/tile dans votre spritesheet
      *
@@ -41,7 +41,7 @@ public:
      */
     AnimationSystem(int tileW, int tileH)
         : tileWidth(tileW), tileHeight(tileH) {
-        // Ce système requiert SpriteComponent et AnimationComponent
+        // Ce systï¿½me requiert SpriteComponent et AnimationComponent
         requireComponent<SpriteComponent>();
         requireComponent<AnimationComponent>();
     }
@@ -52,13 +52,13 @@ public:
     }
 
     /*
-     * Met à jour toutes les animations
-     * deltaTime n'est pas utilisé car on utilise SDL_GetTicks() pour le timing
+     * Met ï¿½ jour toutes les animations
+     * deltaTime n'est pas utilisï¿½ car on utilise SDL_GetTicks() pour le timing
      */
     void update(float deltaTime) override {
         Uint64 currentTime = SDL_GetTicks();
 
-        // Parcourir toutes les entités avec Sprite + Animation
+        // Parcourir toutes les entitï¿½s avec Sprite + Animation
         for (auto entity : getEntities()) {
             auto& sprite = entity->getComponent<SpriteComponent>();
             auto& anim = entity->getComponent<AnimationComponent>();
@@ -68,7 +68,7 @@ public:
                 continue;
             }
 
-            // Vérifier si l'animation actuelle existe
+            // Vï¿½rifier si l'animation actuelle existe
             if (anim.animations.find(anim.currentAnimState) == anim.animations.end()) {
                 std::cerr << "[AnimationSystem] Animation '"
                     << anim.currentAnimState << "' not found!\n";
@@ -77,46 +77,46 @@ public:
 
             const Animation& currentAnim = anim.animations[anim.currentAnimState];
 
-            // Vérifier si assez de temps s'est écoulé pour changer de frame
+            // Vï¿½rifier si assez de temps s'est ï¿½coulï¿½ pour changer de frame
             Uint64 elapsed = currentTime - anim.lastFrameTime;
 
             if (elapsed >= static_cast<Uint64>(currentAnim.speed)) {
                 // Temps de changer de frame!
                 anim.currentFrame++;
 
-                // Gestion de la boucle ou de l'arrêt
+                // Gestion de la boucle ou de l'arrï¿½t
                 if (anim.currentFrame >= currentAnim.frames) {
                     if (currentAnim.loop) {
                         // Boucler l'animation
                         anim.currentFrame = 0;
                     }
                     else {
-                        // Arrêter à la dernière frame
+                        // Arrï¿½ter ï¿½ la derniï¿½re frame
                         anim.currentFrame = currentAnim.frames - 1;
                         anim.isPlaying = false;
                     }
                 }
 
-                // Mettre à jour le temps du dernier changement
+                // Mettre ï¿½ jour le temps du dernier changement
                 anim.lastFrameTime = currentTime;
             }
 
-            // Mettre à jour le srcRect du sprite selon la frame actuelle
+            // Mettre ï¿½ jour le srcRect du sprite selon la frame actuelle
             updateSpriteRect(sprite, anim, currentAnim);
         }
     }
 
 private:
     /*
-     * Met à jour le rectangle source du sprite
+     * Met ï¿½ jour le rectangle source du sprite
      * Calcule la position dans le spritesheet selon l'animation et la frame
      */
     void updateSpriteRect(SpriteComponent& sprite,
         const AnimationComponent& anim,
         const Animation& currentAnim) {
         // Calculer la position dans le spritesheet
-        // - Row (y): Dépend de l'index de l'animation (quelle ligne)
-        // - Col (x): Dépend de la frame actuelle (quelle colonne)
+        // - Row (y): Dï¿½pend de l'index de l'animation (quelle ligne)
+        // - Col (x): Dï¿½pend de la frame actuelle (quelle colonne)
 
         int row = currentAnim.index;
         int col = anim.currentFrame;

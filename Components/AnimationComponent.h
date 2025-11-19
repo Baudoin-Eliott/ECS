@@ -1,6 +1,6 @@
 #pragma once
 #include "../ECS.h"
-#include <SDL3/SDL.h>
+#include <SDL2/SDL.h>
 #include <map>
 #include <string>
 
@@ -8,10 +8,10 @@
  * ============================================================================
  * AnimationComponent - Gestion des animations avec spritesheets
  * ============================================================================
- * Gère les animations d'une entité à partir d'un spritesheet
+ * Gï¿½re les animations d'une entitï¿½ ï¿½ partir d'un spritesheet
  *
- * Dépend de: SpriteComponent (pour changer le srcRect)
- * Utilisé par: AnimationSystem
+ * Dï¿½pend de: SpriteComponent (pour changer le srcRect)
+ * Utilisï¿½ par: AnimationSystem
  *
  * Concept:
  * - Une animation = une ligne dans le spritesheet + nombre de frames + vitesse
@@ -32,13 +32,13 @@
  */
 
  /*
-  * Structure représentant une animation
+  * Structure reprï¿½sentant une animation
   */
 struct Animation {
-    int index;      // Ligne (y) dans le spritesheet (0 = première ligne)
+    int index;      // Ligne (y) dans le spritesheet (0 = premiï¿½re ligne)
     int frames;     // Nombre total de frames dans cette animation
     int speed;      // Vitesse en millisecondes par frame (100 = 10 FPS)
-    bool loop;      // Si true, l'animation boucle, sinon elle s'arrête à la fin
+    bool loop;      // Si true, l'animation boucle, sinon elle s'arrï¿½te ï¿½ la fin
 
     Animation() : index(0), frames(1), speed(100), loop(true) {}
 
@@ -48,19 +48,19 @@ struct Animation {
 
 class AnimationComponent : public ECS::Component {
 public:
-    // État actuel de l'animation (nom de l'animation en cours)
+    // ï¿½tat actuel de l'animation (nom de l'animation en cours)
     std::string currentAnimState;
 
-    // Frame actuellement affichée dans la boucle (0 à frames-1)
+    // Frame actuellement affichï¿½e dans la boucle (0 ï¿½ frames-1)
     int currentFrame = 0;
 
-    // Temps du dernier changement de frame (en ms depuis le démarrage)
+    // Temps du dernier changement de frame (en ms depuis le dï¿½marrage)
     Uint64 lastFrameTime = 0;
 
-    // Collection de toutes les animations disponibles pour cette entité
+    // Collection de toutes les animations disponibles pour cette entitï¿½
     std::map<std::string, Animation> animations;
 
-    // Si false, l'animation ne se met pas à jour
+    // Si false, l'animation ne se met pas ï¿½ jour
     bool isPlaying = true;
 
     // ========================================================================
@@ -68,15 +68,15 @@ public:
     // ========================================================================
 
     /*
-     * Constructeur par défaut
+     * Constructeur par dï¿½faut
      */
     AnimationComponent() = default;
 
     /*
-     * Constructeur avec état initial et map d'animations
+     * Constructeur avec ï¿½tat initial et map d'animations
      *
-     * Paramètres:
-     * - defaultState: Nom de l'animation à jouer au départ
+     * Paramï¿½tres:
+     * - defaultState: Nom de l'animation ï¿½ jouer au dï¿½part
      * - anims: Map des animations disponibles
      *
      * Exemple:
@@ -94,23 +94,23 @@ public:
     }
 
     // ========================================================================
-    // MÉTHODES
+    // Mï¿½THODES
     // ========================================================================
 
     /*
      * Change l'animation en cours
-     * Si l'animation demandée est déjà en cours, ne fait rien
-     * Réinitialise la frame à 0 lors du changement
+     * Si l'animation demandï¿½e est dï¿½jï¿½ en cours, ne fait rien
+     * Rï¿½initialise la frame ï¿½ 0 lors du changement
      */
     void Play(const std::string& animName) {
-        // Vérifier que l'animation existe
+        // Vï¿½rifier que l'animation existe
         if (animations.find(animName) == animations.end()) {
             std::cerr << "[AnimationComponent] Animation '" << animName
                 << "' not found!\n";
             return;
         }
 
-        // Si on est déjà sur cette animation, ne rien faire
+        // Si on est dï¿½jï¿½ sur cette animation, ne rien faire
         if (currentAnimState == animName) {
             return;
         }
@@ -123,7 +123,7 @@ public:
     }
 
     /*
-     * Arrête l'animation (freeze la frame actuelle)
+     * Arrï¿½te l'animation (freeze la frame actuelle)
      */
     void Stop() {
         isPlaying = false;
@@ -138,7 +138,7 @@ public:
     }
 
     /*
-     * Remet l'animation actuelle à la frame 0
+     * Remet l'animation actuelle ï¿½ la frame 0
      */
     void Reset() {
         currentFrame = 0;
@@ -146,7 +146,7 @@ public:
     }
 
     /*
-     * Vérifie si l'animation actuelle est terminée (pour les anims non-loop)
+     * Vï¿½rifie si l'animation actuelle est terminï¿½e (pour les anims non-loop)
      */
     bool isFinished() const {
         if (animations.find(currentAnimState) == animations.end()) {
@@ -158,14 +158,14 @@ public:
     }
 
     /*
-     * Récupère l'animation actuelle
+     * Rï¿½cupï¿½re l'animation actuelle
      */
     const Animation& getCurrentAnimation() const {
         return animations.at(currentAnimState);
     }
 
     /*
-     * Ajoute une nouvelle animation à la map
+     * Ajoute une nouvelle animation ï¿½ la map
      */
     void addAnimation(const std::string& name, const Animation& anim) {
         animations[name] = anim;

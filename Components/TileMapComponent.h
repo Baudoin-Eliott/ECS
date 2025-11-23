@@ -4,6 +4,7 @@
 #include "SDL2/SDL.h"
 #include <vector>
 #include <string>
+#include <map>
 
 struct TileSet
 {
@@ -44,6 +45,8 @@ struct Layer
     int width;
     int height;
     std::vector<int> tiles;
+    int renderOrder = 0;
+
 
     Layer() : name(""), width(0), height(0) {}
 
@@ -69,12 +72,48 @@ struct Layer
     }
 };
 
+struct TiledObject {
+    std::string name;
+    std::string type;
+    std::string objectGroup;
+
+    float x, y;
+    float width, height;
+
+    std::map<std::string, std::string> properties;
+
+    TiledObject() : x(0), y(0), width(0), height(0) {}
+
+    TiledObject(const std::string& name_,const std::string& type_, const std::string& group_, float x_, float y_, float w_, float h_) : name(name_), type(type_), objectGroup(group_), x(x_), y(y_), width(w_), height(h_) {}
+
+    bool hasProperty(const std::string& key) const {
+        return properties.find(key) != properties.end();
+    }
+
+    std::string getProperty(const std::string& key) const {
+        auto it = properties.find(key);
+        return (it != properties.end()) ? it->second : "";
+    }
+
+    void print() const {
+        std::cout << "[TiledObject] " << objectGroup << "/" << type 
+                  << " '" << name << "' at (" << x << ", " << y 
+                  << ") size: " << width << "x" << height << "\n";
+    }
+
+};
+
+
+
+
+
 class TileMapComponent : public ECS::Component
 {
 
 public:
     std::vector<TileSet> tilesets;
     std::vector<Layer> layers;
+    std::vector<TiledObject> objects;
 
     int mapWidth;
     int mapHeight;
@@ -95,6 +134,35 @@ public:
                 result = &ts;
         }
         return result;
+    }
+
+    std::vector<TiledObject*> getObjectsByGroup(const std::string& group)  {
+        std::vector<TiledObject*> result;
+        for (auto& obj : objects){
+            if (obj.objectGroup == group){
+                result.push_back(&obj);
+            }
+        }
+        return result;
+    }
+
+    std::vector<TiledObject*> getObjectsByType(const std::string& type)  {
+        std::vector<TiledObject*> result;
+        for (auto& obj : objects){
+            if (obj.type == type){
+                result.push_back(&obj);
+            }
+        }
+        return result;
+    }
+
+    TiledObject* getObjectByName(const std::string& name)  {
+        for (auto& obj : objects){
+            if (obj.name == name){
+                return &obj;
+            }
+        }
+        return nullptr;
     }
 
     Layer *getLayerByName(const std::string& name)

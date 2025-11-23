@@ -31,7 +31,8 @@
 #include <typeindex>
 #include <set>
 
-namespace ECS {
+namespace ECS
+{
 
     // ========================================================================
     // FORWARD DECLARATIONS
@@ -58,7 +59,7 @@ namespace ECS {
     using ComponentBitSet = std::bitset<MAX_COMPONENTS>;
 
     // Array pour acc�der rapidement aux composants par leur ID
-    using ComponentArray = std::array<Component*, MAX_COMPONENTS>;
+    using ComponentArray = std::array<Component *, MAX_COMPONENTS>;
 
     // ========================================================================
     // LAYER SYSTEM
@@ -90,14 +91,17 @@ namespace ECS {
      * Utilise std::type_index pour garantir l'unicit� m�me entre diff�rentes
      * unit�s de compilation (r�sout le probl�me des static dans les templates)
      */
-    namespace Internal {
-        inline ComponentID getUniqueComponentID() {
+    namespace Internal
+    {
+        inline ComponentID getUniqueComponentID()
+        {
             static ComponentID lastID = 0;
             return lastID++;
         }
 
         // Map globale: type -> ID (thread-safe en C++11+)
-        inline std::unordered_map<std::type_index, ComponentID>& getComponentTypeMap() {
+        inline std::unordered_map<std::type_index, ComponentID> &getComponentTypeMap()
+        {
             static std::unordered_map<std::type_index, ComponentID> typeMap;
             return typeMap;
         }
@@ -108,12 +112,14 @@ namespace ECS {
      * Cr�e un nouvel ID si c'est la premi�re fois qu'on voit ce type
      */
     template <typename T>
-    inline ComponentID getComponentTypeID() {
+    inline ComponentID getComponentTypeID()
+    {
         std::type_index typeIdx(typeid(T));
-        auto& typeMap = Internal::getComponentTypeMap();
+        auto &typeMap = Internal::getComponentTypeMap();
 
         // Si ce type n'a pas encore d'ID, on lui en attribue un
-        if (typeMap.find(typeIdx) == typeMap.end()) {
+        if (typeMap.find(typeIdx) == typeMap.end())
+        {
             typeMap[typeIdx] = Internal::getUniqueComponentID();
         }
 
@@ -128,14 +134,15 @@ namespace ECS {
      * Classe de base pour tous les composants
      * Les composants sont de simples donn�es avec quelques hooks optionnels
      */
-    class Component {
+    class Component
+    {
     public:
-        Entity* entity = nullptr;  // R�f�rence vers l'entit� propri�taire
+        Entity *entity = nullptr; // R�f�rence vers l'entit� propri�taire
 
         // Hooks du cycle de vie (optionnels, override si n�cessaire)
-        virtual void init() {}      // Appel� apr�s ajout � l'entit�
-        virtual void update() {}    // Appel� chaque frame (si vous n'utilisez pas de Systems)
-        virtual void draw() {}      // Appel� pour le rendu (si vous n'utilisez pas de Systems)
+        virtual void init() {}   // Appel� apr�s ajout � l'entit�
+        virtual void update() {} // Appel� chaque frame (si vous n'utilisez pas de Systems)
+        virtual void draw() {}   // Appel� pour le rendu (si vous n'utilisez pas de Systems)
 
         virtual ~Component() = default;
     };
@@ -148,10 +155,10 @@ namespace ECS {
      * Une entit� est simplement un conteneur de composants avec un ID unique
      * Elle ne contient pas de logique, juste des donn�es (composants)
      */
-    class Entity {
+    class Entity
+    {
     private:
-
-        Manager* manager = nullptr;
+        Manager *manager = nullptr;
         EntityID id = 0;
         bool active = true;
         std::string tag = "";
@@ -166,20 +173,24 @@ namespace ECS {
         friend class System;
 
     public:
-        Entity(Manager* mgr, EntityID entityID) : manager(mgr), id(entityID) {}
+        Entity(Manager *mgr, EntityID entityID) : manager(mgr), id(entityID) {}
 
         // ====================================================================
         // LIFECYCLE
         // ====================================================================
 
-        void update() {
-            for (auto& c : components) {
+        void update()
+        {
+            for (auto &c : components)
+            {
                 c->update();
             }
         }
 
-        void draw() {
-            for (auto& c : components) {
+        void draw()
+        {
+            for (auto &c : components)
+            {
                 c->draw();
             }
         }
@@ -196,9 +207,9 @@ namespace ECS {
          * Un tag est un identifiant unique (string) pour cette entit�
          * Utile pour retrouver rapidement des entit�s sp�cifiques (Player, Boss, etc.)
          */
-        void setTag(const std::string& t) { tag = t; }
-        const std::string& getTag() const { return tag; }
-        bool hasTag(const std::string& t) const { return tag == t; }
+        void setTag(const std::string &t) { tag = t; }
+        const std::string &getTag() const { return tag; }
+        bool hasTag(const std::string &t) const { return tag == t; }
 
         // ====================================================================
         // LAYER SYSTEM
@@ -208,23 +219,28 @@ namespace ECS {
          * Les layers permettent de grouper les entit�s (une entit� peut avoir plusieurs layers)
          * Exemple: une entit� peut �tre � la fois Enemy + Renderable + Collidable
          */
-        void addLayer(Layer layer) {
-            if (layer < MAX_LAYERS) {
+        void addLayer(Layer layer)
+        {
+            if (layer < MAX_LAYERS)
+            {
                 layers.set(layer);
             }
         }
 
-        void removeLayer(Layer layer) {
-            if (layer < MAX_LAYERS) {
+        void removeLayer(Layer layer)
+        {
+            if (layer < MAX_LAYERS)
+            {
                 layers.reset(layer);
             }
         }
 
-        bool hasLayer(Layer layer) const {
+        bool hasLayer(Layer layer) const
+        {
             return layer < MAX_LAYERS && layers.test(layer);
         }
 
-        const LayerBitSet& getLayers() const { return layers; }
+        const LayerBitSet &getLayers() const { return layers; }
 
         // ====================================================================
         // COMPONENT MANAGEMENT
@@ -234,8 +250,9 @@ namespace ECS {
          * V�rifie si l'entit� poss�de un composant d'un certain type
          * Exemple: entity.hasComponent<TransformComponent>()
          */
-        template<typename T>
-        bool hasComponent() const {
+        template <typename T>
+        bool hasComponent() const
+        {
             return componentBitSet[getComponentTypeID<T>()];
         }
 
@@ -250,19 +267,21 @@ namespace ECS {
          *   entity.addComponent<VelocityComponent>();
          */
         template <typename T, typename... TArgs>
-        T& addComponent(TArgs&&... args) {
+        T &addComponent(TArgs &&...args)
+        {
             // V�rification: pas plus de MAX_COMPONENTS types diff�rents
             ComponentID typeID = getComponentTypeID<T>();
-            if (typeID >= MAX_COMPONENTS) {
+            if (typeID >= MAX_COMPONENTS)
+            {
                 throw std::runtime_error("MAX_COMPONENTS exceeded!");
             }
 
             // Cr�ation du composant avec perfect forwarding des arguments
-            T* component = new T(std::forward<TArgs>(args)...);
+            T *component = new T(std::forward<TArgs>(args)...);
             component->entity = this;
 
             // Stockage dans un unique_ptr pour gestion automatique de la m�moire
-            std::unique_ptr<Component> uPtr{ component };
+            std::unique_ptr<Component> uPtr{component};
             components.emplace_back(std::move(uPtr));
 
             // Enregistrement dans l'array d'acc�s rapide et le bitset
@@ -284,30 +303,33 @@ namespace ECS {
          *       auto& transform = entity.getComponent<TransformComponent>();
          *   }
          */
-        template<typename T>
-        T& getComponent() const {
+        template <typename T>
+        T &getComponent() const
+        {
             auto ptr = componentArray[getComponentTypeID<T>()];
-            return *static_cast<T*>(ptr);
+            return *static_cast<T *>(ptr);
         }
 
         /*
          * Retire un composant de l'entit�
          */
-        template<typename T>
-        void removeComponent() {
+        template <typename T>
+        void removeComponent()
+        {
             ComponentID typeID = getComponentTypeID<T>();
-            if (componentBitSet[typeID]) {
+            if (componentBitSet[typeID])
+            {
                 componentBitSet[typeID] = false;
                 componentArray[typeID] = nullptr;
 
                 // Suppression du composant du vecteur
                 components.erase(
                     std::remove_if(components.begin(), components.end(),
-                        [typeID](const std::unique_ptr<Component>& c) {
-                            return dynamic_cast<T*>(c.get()) != nullptr;
-                        }),
-                    components.end()
-                );
+                                   [typeID](const std::unique_ptr<Component> &c)
+                                   {
+                                       return dynamic_cast<T *>(c.get()) != nullptr;
+                                   }),
+                    components.end());
             }
         }
     };
@@ -337,12 +359,13 @@ namespace ECS {
      *       }
      *   };
      */
-    class System {
+    class System
+    {
     protected:
-        Manager* manager = nullptr;
-        ComponentBitSet componentSignature;  // Quels composants ce syst�me requiert
-        std::vector<Entity*> entities;        // Entit�s qui matchent la signature
-        int priority = 0;                     // Ordre d'ex�cution (plus petit = ex�cut� en premier)
+        Manager *manager = nullptr;
+        ComponentBitSet componentSignature; // Quels composants ce syst�me requiert
+        std::vector<Entity *> entities;     // Entit�s qui matchent la signature
+        int priority = 0;                   // Ordre d'ex�cution (plus petit = ex�cut� en premier)
 
     public:
         virtual ~System() = default;
@@ -351,8 +374,9 @@ namespace ECS {
          * D�clare qu'un composant est requis pour ce syst�me
          * � appeler dans le constructeur de votre syst�me
          */
-        template<typename T>
-        void requireComponent() {
+        template <typename T>
+        void requireComponent()
+        {
             ComponentID typeID = getComponentTypeID<T>();
             componentSignature.set(typeID);
         }
@@ -360,20 +384,21 @@ namespace ECS {
         /*
          * V�rifie si une entit� correspond � la signature de ce syst�me
          */
-        bool matchesSignature(const Entity& entity) const {
+        bool matchesSignature(const Entity &entity) const
+        {
             return (componentSignature & entity.componentBitSet) == componentSignature;
         }
 
-        const std::vector<Entity*>& getEntities() const { return entities; }
+        const std::vector<Entity *> &getEntities() const { return entities; }
 
         void setPriority(int p) { priority = p; }
         int getPriority() const { return priority; }
 
         // Hooks du cycle de vie
-        virtual void init() {}                        // Appel� � l'ajout du syst�me
-        virtual void update(float deltaTime) {}       // Appel� chaque frame
-        virtual void onEntityAdded(Entity* entity) {} // Appel� quand une entit� matche
-        virtual void onEntityRemoved(Entity* entity) {} // Appel� quand une entit� ne matche plus
+        virtual void init() {}                          // Appel� � l'ajout du syst�me
+        virtual void update(float deltaTime) {}         // Appel� chaque frame
+        virtual void onEntityAdded(Entity *entity) {}   // Appel� quand une entit� matche
+        virtual void onEntityRemoved(Entity *entity) {} // Appel� quand une entit� ne matche plus
 
         friend class Manager;
     };
@@ -386,11 +411,12 @@ namespace ECS {
      * Le Manager g�re toutes les entit�s et syst�mes
      * C'est le point d'entr�e principal de l'ECS
      */
-    class Manager {
+    class Manager
+    {
     private:
         std::vector<std::unique_ptr<Entity>> entities;
         std::vector<std::unique_ptr<System>> systems;
-        std::unordered_map<std::string, Entity*> taggedEntities;
+        std::unordered_map<std::string, Entity *> taggedEntities;
         EntityID nextEntityID = 0;
 
     public:
@@ -402,9 +428,10 @@ namespace ECS {
          * Cr�e une nouvelle entit�
          * Retourne une r�f�rence vers l'entit� cr��e
          */
-        Entity& createEntity() {
+        Entity &createEntity()
+        {
             auto entity = std::make_unique<Entity>(this, nextEntityID++);
-            Entity* entityPtr = entity.get();
+            Entity *entityPtr = entity.get();
             entities.emplace_back(std::move(entity));
             return *entityPtr;
         }
@@ -412,8 +439,9 @@ namespace ECS {
         /*
          * Cr�e une entit� avec un tag
          */
-        Entity& createEntity(const std::string& tag) {
-            Entity& entity = createEntity();
+        Entity &createEntity(const std::string &tag)
+        {
+            Entity &entity = createEntity();
             entity.setTag(tag);
             taggedEntities[tag] = &entity;
             return entity;
@@ -422,7 +450,8 @@ namespace ECS {
         /*
          * R�cup�re toutes les entit�s
          */
-        const std::vector<std::unique_ptr<Entity>>& getEntities() const {
+        const std::vector<std::unique_ptr<Entity>> &getEntities() const
+        {
             return entities;
         }
 
@@ -430,7 +459,8 @@ namespace ECS {
          * R�cup�re une entit� par son tag
          * Retourne nullptr si aucune entit� n'a ce tag
          */
-        Entity* getEntityByTag(const std::string& tag) {
+        Entity *getEntityByTag(const std::string &tag)
+        {
             auto it = taggedEntities.find(tag);
             return (it != taggedEntities.end()) ? it->second : nullptr;
         }
@@ -438,10 +468,13 @@ namespace ECS {
         /*
          * R�cup�re toutes les entit�s d'un layer sp�cifique
          */
-        std::vector<Entity*> getEntitiesByLayer(Layer layer) {
-            std::vector<Entity*> result;
-            for (auto& entity : entities) {
-                if (entity->isActive() && entity->hasLayer(layer)) {
+        std::vector<Entity *> getEntitiesByLayer(Layer layer)
+        {
+            std::vector<Entity *> result;
+            for (auto &entity : entities)
+            {
+                if (entity->isActive() && entity->hasLayer(layer))
+                {
                     result.push_back(entity.get());
                 }
             }
@@ -452,37 +485,42 @@ namespace ECS {
          * Supprime les entit�s marqu�es comme inactives
          * � appeler � la fin de chaque frame
          */
-        void refresh() {
+        void refresh()
+        {
             // Mise � jour des syst�mes avant suppression
-            for (auto& system : systems) {
+            for (auto &system : systems)
+            {
                 system->entities.erase(
                     std::remove_if(system->entities.begin(), system->entities.end(),
-                        [&](Entity* entity) {
-                            bool shouldRemove = !entity->isActive() || !system->matchesSignature(*entity);
-                            if (shouldRemove) {
-                                system->onEntityRemoved(entity);
-                            }
-                            return shouldRemove;
-                        }),
-                    system->entities.end()
-                );
+                                   [&](Entity *entity)
+                                   {
+                                       bool shouldRemove = !entity->isActive() || !system->matchesSignature(*entity);
+                                       if (shouldRemove)
+                                       {
+                                           system->onEntityRemoved(entity);
+                                       }
+                                       return shouldRemove;
+                                   }),
+                    system->entities.end());
             }
 
             // Suppression des entit�s inactives
             entities.erase(
                 std::remove_if(entities.begin(), entities.end(),
-                    [&](const std::unique_ptr<Entity>& entity) {
-                        if (!entity->isActive()) {
-                            // Retrait du map des tags
-                            if (!entity->getTag().empty()) {
-                                taggedEntities.erase(entity->getTag());
-                            }
-                            return true;
-                        }
-                        return false;
-                    }),
-                entities.end()
-            );
+                               [&](const std::unique_ptr<Entity> &entity)
+                               {
+                                   if (!entity->isActive())
+                                   {
+                                       // Retrait du map des tags
+                                       if (!entity->getTag().empty())
+                                       {
+                                           taggedEntities.erase(entity->getTag());
+                                       }
+                                       return true;
+                                   }
+                                   return false;
+                               }),
+                entities.end());
         }
 
         // ====================================================================
@@ -497,34 +535,62 @@ namespace ECS {
          *   manager.addSystem<MovementSystem>();
          *   manager.addSystem<RenderSystem>()->setPriority(100);
          */
-        template<typename T, typename... TArgs>
-        T* addSystem(TArgs&&... args) {
-            T* system = new T(std::forward<TArgs>(args)...);
+        template <typename T, typename... TArgs>
+        T *addSystem(TArgs &&...args)
+        {
+            T *system = new T(std::forward<TArgs>(args)...);
             system->manager = this;
 
-            std::unique_ptr<System> uPtr{ system };
+            std::unique_ptr<System> uPtr{system};
             systems.emplace_back(std::move(uPtr));
 
             // Tri par priorit� (plus petit en premier)
             std::sort(systems.begin(), systems.end(),
-                [](const std::unique_ptr<System>& a, const std::unique_ptr<System>& b) {
-                    return a->getPriority() < b->getPriority();
-                });
+                      [](const std::unique_ptr<System> &a, const std::unique_ptr<System> &b)
+                      {
+                          return a->getPriority() < b->getPriority();
+                      });
 
             system->init();
             return system;
+        }
+
+        void sortSystems()
+        {
+            std::sort(systems.begin(), systems.end(),
+                      [](const std::unique_ptr<System> &a, const std::unique_ptr<System> &b)
+                      {
+                          return a->getPriority() < b->getPriority();
+                      });
+        }
+
+        template <typename T>
+        std::vector<T *> getSystems()
+        {
+            std::vector<T *> result;
+            for (auto &system : systems)
+            {
+                T *castedSystem = dynamic_cast<T *>(system.get());
+                if (castedSystem)
+                {
+                    result.push_back(castedSystem);
+                }
+            }
+            return result;
         }
 
         /*
          * Met � jour tous les syst�mes
          * � appeler chaque frame
          */
-        void update(float deltaTime) {
+        void update(float deltaTime)
+        {
             // Mise � jour des entit�s dans les syst�mes
             updateSystemEntities();
 
             // Mise � jour de tous les syst�mes
-            for (auto& system : systems) {
+            for (auto &system : systems)
+            {
                 system->update(deltaTime);
             }
         }
@@ -532,35 +598,39 @@ namespace ECS {
         /*
          * Met � jour les entit�s de chaque syst�me selon leur signature
          */
-        void updateSystemEntities() {
-            for (auto& system : systems) {
+        void updateSystemEntities()
+        {
+            for (auto &system : systems)
+            {
 
-
-        
-                for (auto& entity : entities) {
-                    if (entity->isActive() && system->matchesSignature(*entity)) {
+                for (auto &entity : entities)
+                {
+                    if (entity->isActive() && system->matchesSignature(*entity))
+                    {
                         // V�rifier si l'entit� n'est pas d�j� dans le syst�me
                         auto it = std::find(system->entities.begin(), system->entities.end(), entity.get());
-                        if (it == system->entities.end()) {
-                            
+                        if (it == system->entities.end())
+                        {
+
                             system->entities.push_back(entity.get());
                             system->onEntityAdded(entity.get());
                         }
                     }
                 }
-                
-    
             }
         }
 
         /*
          * R�cup�re un syst�me par son type
          */
-        template<typename T>
-        T* getSystem() {
-            for (auto& system : systems) {
-                T* castedSystem = dynamic_cast<T*>(system.get());
-                if (castedSystem) {
+        template <typename T>
+        T *getSystem()
+        {
+            for (auto &system : systems)
+            {
+                T *castedSystem = dynamic_cast<T *>(system.get());
+                if (castedSystem)
+                {
                     return castedSystem;
                 }
             }

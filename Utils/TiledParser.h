@@ -44,91 +44,108 @@ public:
             currentLayer = currentLayer->NextSiblingElement("layer");
         }
 
+        tinyxml2::XMLElement *currentObjectGroup = map->FirstChildElement("objectgroup");
+
+        while (currentObjectGroup)
+        {
+            parseObjectGroup(currentObjectGroup, tileMapComponent);
+            currentObjectGroup = currentObjectGroup->NextSiblingElement("objectgroup");
+        }
+
         return true;
     }
 
 private:
     static bool parseTileset(tinyxml2::XMLElement *tileset, TileMapComponent &tileMapComponent, SDL_Renderer *renderer, const std::string &baseDirectory)
-{
-    TileSet thisTileset = {};
-    thisTileset.firstGID = tileset->IntAttribute("firstgid");
-    const char *source = tileset->Attribute("source");
-    
-    if (source) {
-        
-        std::string fullPath = baseDirectory + std::string(source);
-        tinyxml2::XMLDocument tsxDoc;
+    {
+        TileSet thisTileset = {};
+        thisTileset.firstGID = tileset->IntAttribute("firstgid");
+        const char *source = tileset->Attribute("source");
 
-        if (tsxDoc.LoadFile(fullPath.c_str()) != tinyxml2::XML_SUCCESS) {
-            std::cout << "[TiledParser] Error loading external TSX: " << fullPath << "\n";
-            return false;
+        if (source)
+        {
+
+            std::string fullPath = baseDirectory + std::string(source);
+            tinyxml2::XMLDocument tsxDoc;
+
+            if (tsxDoc.LoadFile(fullPath.c_str()) != tinyxml2::XML_SUCCESS)
+            {
+                std::cout << "[TiledParser] Error loading external TSX: " << fullPath << "\n";
+                return false;
+            }
+
+            tinyxml2::XMLElement *tsxTileset = tsxDoc.FirstChildElement("tileset");
+            if (!tsxTileset)
+            {
+                std::cout << "[TiledParser] No <tileset> element in TSX\n";
+                return false;
+            }
+
+            thisTileset.tileWidth = tsxTileset->IntAttribute("tilewidth");
+            thisTileset.tileHeight = tsxTileset->IntAttribute("tileheight");
+            thisTileset.columns = tsxTileset->IntAttribute("columns");
+            thisTileset.tileCount = tsxTileset->IntAttribute("tilecount");
+
+            tinyxml2::XMLElement *image = tsxTileset->FirstChildElement("image");
+            if (!image)
+            {
+                std::cerr << "[TiledParser] ERROR: No <image> in tileset!\n";
+                return false;
+            }
+
+            const char *imageSource = image->Attribute("source");
+            if (!imageSource)
+            {
+                std::cerr << "[TiledParser] ERROR: <image> has no source attribute!\n";
+                return false;
+            }
+
+            std::string imagePath = baseDirectory + std::string(imageSource);
+            thisTileset.texture = loadTexture(imagePath.c_str(), renderer);
+
+            if (!thisTileset.texture)
+            {
+                std::cerr << "[TiledParser] ERROR: Failed to load texture: " << imagePath << "\n";
+                return false;
+            }
+        }
+        else
+        {
+
+            thisTileset.tileWidth = tileset->IntAttribute("tilewidth");
+            thisTileset.tileHeight = tileset->IntAttribute("tileheight");
+
+            tinyxml2::XMLElement *image = tileset->FirstChildElement("image");
+            if (!image)
+            {
+                std::cerr << "[TiledParser] ERROR: No <image> in tileset!\n";
+                return false;
+            }
+
+            const char *imageSource = image->Attribute("source");
+            if (!imageSource)
+            {
+                std::cerr << "[TiledParser] ERROR: <image> has no source attribute!\n";
+                return false;
+            }
+
+            std::string imagePath = baseDirectory + std::string(imageSource);
+            thisTileset.texture = loadTexture(imagePath.c_str(), renderer);
+
+            if (!thisTileset.texture)
+            {
+                std::cerr << "[TiledParser] ERROR: Failed to load texture: " << imagePath << "\n";
+                return false;
+            }
+
+            thisTileset.columns = image->IntAttribute("width") / thisTileset.tileWidth;
+            thisTileset.tileCount = thisTileset.columns * (image->IntAttribute("height") / thisTileset.tileHeight);
         }
 
-        tinyxml2::XMLElement *tsxTileset = tsxDoc.FirstChildElement("tileset");
-        if (!tsxTileset) {
-            std::cout << "[TiledParser] No <tileset> element in TSX\n";
-            return false;
-        }
+        tileMapComponent.tilesets.push_back(thisTileset);
 
-        thisTileset.tileWidth = tsxTileset->IntAttribute("tilewidth");
-        thisTileset.tileHeight = tsxTileset->IntAttribute("tileheight");
-        thisTileset.columns = tsxTileset->IntAttribute("columns");
-        thisTileset.tileCount = tsxTileset->IntAttribute("tilecount");
-
-        
-        tinyxml2::XMLElement *image = tsxTileset->FirstChildElement("image");
-        if (!image) {
-            std::cerr << "[TiledParser] ERROR: No <image> in tileset!\n";
-            return false;  
-        }
-        
-        const char* imageSource = image->Attribute("source");
-        if (!imageSource) {
-            std::cerr << "[TiledParser] ERROR: <image> has no source attribute!\n";
-            return false;
-        }
-        
-        std::string imagePath = baseDirectory + std::string(imageSource);
-        thisTileset.texture = loadTexture(imagePath.c_str(), renderer);
-        
-        if (!thisTileset.texture) {
-            std::cerr << "[TiledParser] ERROR: Failed to load texture: " << imagePath << "\n";
-            return false;
-        }
+        return true;
     }
-    else {
-
-        thisTileset.tileWidth = tileset->IntAttribute("tilewidth");
-        thisTileset.tileHeight = tileset->IntAttribute("tileheight");
-
-        tinyxml2::XMLElement *image = tileset->FirstChildElement("image");
-        if (!image) {
-            std::cerr << "[TiledParser] ERROR: No <image> in tileset!\n";
-            return false;
-        }
-        
-        const char* imageSource = image->Attribute("source");
-        if (!imageSource) {
-            std::cerr << "[TiledParser] ERROR: <image> has no source attribute!\n";
-            return false;
-        }
-        
-        std::string imagePath = baseDirectory + std::string(imageSource);
-        thisTileset.texture = loadTexture(imagePath.c_str(), renderer);
-        
-        if (!thisTileset.texture) {
-            std::cerr << "[TiledParser] ERROR: Failed to load texture: " << imagePath << "\n";
-            return false;
-        }
-        
-        thisTileset.columns = image->IntAttribute("width") / thisTileset.tileWidth;
-        thisTileset.tileCount = thisTileset.columns * (image->IntAttribute("height") / thisTileset.tileHeight);
-    }
-    
-    tileMapComponent.tilesets.push_back(thisTileset);
-    
-    return true;
-}
 
     static bool parseLayer(tinyxml2::XMLElement *layer, TileMapComponent &tileMapComponent)
     {
@@ -137,6 +154,23 @@ private:
         thisLayer.name = layer->Attribute("name");
         thisLayer.width = layer->IntAttribute("width");
         thisLayer.height = layer->IntAttribute("height");
+
+        tinyxml2::XMLElement *propertiesElem = layer->FirstChildElement("properties");
+        if (propertiesElem)
+        {
+            tinyxml2::XMLElement *property = propertiesElem->FirstChildElement("property");
+            while (property)
+            {
+                std::string propName = property->Attribute("name");
+                if (propName == "renderOrder")
+                {
+                    thisLayer.renderOrder = property->IntAttribute("value");
+                    std::cout << "[TiledParser] Layer '" << thisLayer.name
+                              << "' renderOrder: " << thisLayer.renderOrder << "\n";
+                }
+                property = property->NextSiblingElement("property");
+            }
+        }
 
         tinyxml2::XMLElement *data = layer->FirstChildElement("data");
         if (!data)
@@ -197,6 +231,50 @@ private:
         }
 
         return result;
+    }
+
+    static bool parseObjectGroup(tinyxml2::XMLElement *objectGroup, TileMapComponent &tileMapComponent)
+    {
+        std::string name = objectGroup->Attribute("name");
+        tinyxml2::XMLElement *obj = objectGroup->FirstChildElement("object");
+        while (obj)
+        {
+            TiledObject object = parseObject(obj, name);
+            tileMapComponent.objects.push_back(object);
+            obj = obj->NextSiblingElement("object");
+        }
+        return true;
+    }
+
+    static TiledObject parseObject(tinyxml2::XMLElement *object, std::string groupName)
+    {
+        TiledObject obj = {};
+        if (object->Attribute("name"))
+            obj.name = object->Attribute("name");
+        obj.objectGroup = groupName;
+        obj.x = object->FloatAttribute("x");
+        obj.y = object->FloatAttribute("y");
+        obj.width = object->FloatAttribute("width");
+        obj.height = object->FloatAttribute("height");
+        tinyxml2::XMLElement *propertiesElem = object->FirstChildElement("properties");
+        if (propertiesElem)
+        {
+            tinyxml2::XMLElement *property = propertiesElem->FirstChildElement("property");
+            while (property)
+            {
+
+                parseProperties(property, obj);
+                property = property->NextSiblingElement("property");
+            }
+        }
+
+        return obj;
+    }
+
+    static bool parseProperties(tinyxml2::XMLElement *property, TiledObject &object)
+    {
+        object.properties[property->Attribute("name")] = property->Attribute("value");
+        return true;
     }
 
     static SDL_Texture *loadTexture(const char *filepath, SDL_Renderer *renderer)

@@ -11,12 +11,12 @@ class TileMapRenderSystem : public ECS::System
 private:
     SDL_Renderer *renderer;
     CameraComponent *camera = nullptr;
+    int targetRenderOrder;
 
 public:
     void setCamera(CameraComponent *cam) { camera = cam; }
-    TileMapRenderSystem(SDL_Renderer *a_renderer)
+    TileMapRenderSystem(SDL_Renderer *a_renderer, int renderOrder = 0) : renderer(a_renderer), targetRenderOrder(renderOrder)
     {
-        renderer = a_renderer;
         requireComponent<TileMapComponent>();
     }
 
@@ -28,14 +28,23 @@ public:
     void update(float deltaTime) override
     {
         (void)deltaTime;
+        if (!camera){
+            std::cout <<"[TileMapRenderSystem] no cam set";
+            return;
+        }
 
         for (auto &entity : getEntities())
         {
             auto &tilemap = entity->getComponent<TileMapComponent>();
 
+
             for (auto &layer : tilemap.layers)
             {
-                drawLayer(tilemap, &layer);
+                if (layer.renderOrder == targetRenderOrder)
+                {
+                    
+                    drawLayer(tilemap, &layer);
+                }
             }
         }
     }

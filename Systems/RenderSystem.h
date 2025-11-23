@@ -30,6 +30,8 @@ public:
     {
         (void)deltaTime; // Éviter warning unused parameter
 
+
+        
         std::vector<ECS::Entity *> sortedEntities = getEntities();
 
         // Tri par renderLayer

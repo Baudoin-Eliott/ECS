@@ -10,12 +10,11 @@ class DebugRenderSystem : public ECS::System
 {
 private:
     CameraComponent *camera;
-    SDL_Renderer *renderer;
     ECS::Entity *tileMapEntity;
     bool enable = false;
 
 public:
-    DebugRenderSystem(SDL_Renderer *rend, bool state = false) : renderer(rend), enable(state)
+    DebugRenderSystem(bool state = false) :  enable(state)
     {
         requireComponent<TransformComponent>();
         requireComponent<CollisionComponent>();
@@ -45,10 +44,8 @@ public:
         std::cout << "[DebugRenderSystem] Initialized\n";
     }
 
-    void update(float deltaTime)
+    void renderer(SDL_Renderer* renderer)
     {
-
-        (void)deltaTime;
 
         if (!camera)
             return;

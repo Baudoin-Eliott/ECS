@@ -51,10 +51,7 @@ public:
             << tileWidth << "x" << tileHeight << "\n";
     }
 
-    /*
-     * Met � jour toutes les animations
-     * deltaTime n'est pas utilis� car on utilise SDL_GetTicks() pour le timing
-     */
+
     void update(float deltaTime) override {
         Uint64 currentTime = SDL_GetTicks();
 

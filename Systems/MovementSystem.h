@@ -3,14 +3,7 @@
 #include "../ECS.h"
 #include "../Components/TransformComponent.h"
 
-/*
- * ============================================================================
- * MovementSystem - Applique la vélocité aux entités
- * ============================================================================
- * Ce système déplace toutes les entités qui ont un TransformComponent
- * en appliquant leur vélocité
- * ============================================================================
- */
+
 
 class MovementSystem : public ECS::System
 {

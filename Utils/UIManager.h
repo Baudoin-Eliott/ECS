@@ -74,10 +74,11 @@ public:
         }
     }
 
-    void handleInput(SDL_Event &event)
+    bool handleInput(SDL_Event &event)
     {
         if (!menuStack.empty())
-            menuStack.back()->handleInput(event);
+            return menuStack.back()->handleInput(event);
+        return false;
     }
 
     bool hasMenus() const{

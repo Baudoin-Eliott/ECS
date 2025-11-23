@@ -396,7 +396,8 @@ namespace ECS
 
         // Hooks du cycle de vie
         virtual void init() {}                          // Appel� � l'ajout du syst�me
-        virtual void update(float deltaTime) {}         // Appel� chaque frame
+        virtual void update(float deltaTime) {}         // Appel pour les system logique
+        virtual void render(SDL_Renderer* renderer) {}  // Appel pour les system graphics
         virtual void onEntityAdded(Entity *entity) {}   // Appel� quand une entit� matche
         virtual void onEntityRemoved(Entity *entity) {} // Appel� quand une entit� ne matche plus
 
@@ -592,6 +593,12 @@ namespace ECS
             for (auto &system : systems)
             {
                 system->update(deltaTime);
+            }
+        }
+
+        void render(SDL_Renderer* renderer){
+            for (auto& system : systems){
+                system->render(renderer);
             }
         }
 

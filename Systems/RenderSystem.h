@@ -9,11 +9,10 @@
 class RenderSystem : public ECS::System
 {
 private:
-    SDL_Renderer *renderer = nullptr;
     CameraComponent *camera = nullptr;
 
 public:
-    RenderSystem(SDL_Renderer *rend) : renderer(rend)
+    RenderSystem()
     {
         requireComponent<TransformComponent>();
         requireComponent<SpriteComponent>();
@@ -26,12 +25,8 @@ public:
         std::cout << "[RenderSystem] Initialized\n";
     }
 
-    void update(float deltaTime) override
+    void render(SDL_Renderer* renderer) override
     {
-        (void)deltaTime; // Éviter warning unused parameter
-
-
-        
         std::vector<ECS::Entity *> sortedEntities = getEntities();
 
         // Tri par renderLayer

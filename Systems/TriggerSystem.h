@@ -11,8 +11,7 @@ class TriggerSystem : public ECS::System
 private:
     ECS::Entity *tileMapEntity;
     std::set<TiledObject *> triggeredObjects;
-    std::function<void(const std::string&, const std::string&)> onTeleportCallback;
-
+    std::function<void(const std::string &, const std::string &)> onTeleportCallback;
 
 public:
     TriggerSystem()
@@ -23,7 +22,8 @@ public:
 
     void setTileMapEntity(ECS::Entity *entity) { tileMapEntity = entity; }
 
-    void setTeleportCallback(std::function<void(const std::string&, const std::string&)> callback) {
+    void setTeleportCallback(std::function<void(const std::string &, const std::string &)> callback)
+    {
         onTeleportCallback = callback;
         std::cout << "[TriggerSystem] Teleport callback set\n";
     }
@@ -55,7 +55,7 @@ public:
                     SDL_FRect triggerRect = {trigger->x, trigger->y, trigger->width, trigger->height};
                     if (collision.intersects(triggerRect, transform.position))
                     {
-                       
+
                         if (triggeredObjects.find(trigger) == triggeredObjects.end())
                         {
                             onTriggerEnter(trigger);
@@ -64,7 +64,7 @@ public:
                     }
                     else
                     {
-                        
+
                         triggeredObjects.erase(trigger);
                     }
                 }
@@ -78,9 +78,15 @@ public:
         std::cout << "  Destination: " << trigger->getProperty("destination") << "\n";
         std::cout << "  Target: " << trigger->getProperty("target") << "\n";
 
-        if (onTeleportCallback) {
-            onTeleportCallback( trigger->getProperty("destination"), trigger->getProperty("target"));
-        } else {
+        if (onTeleportCallback)
+        {
+            AudioManager::getInstance().playSound("teleport");
+
+            AudioManager::getInstance().stopMusic(1000);
+            onTeleportCallback(trigger->getProperty("destination"), trigger->getProperty("target"));
+        }
+        else
+        {
             std::cerr << "[TriggerSystem] WARNING: No teleport callback set!\n";
         }
     }

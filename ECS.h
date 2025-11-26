@@ -30,6 +30,7 @@
 #include <string>
 #include <typeindex>
 #include <set>
+#include <SDL2/SDL.h>
 
 namespace ECS
 {

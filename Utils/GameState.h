@@ -10,5 +10,6 @@ enum class GameState {
     SaveSelect,
     Options,
     Credits,
-    GameOver
+    GameOver,
+    Casting
 };

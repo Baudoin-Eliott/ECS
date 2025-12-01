@@ -46,7 +46,4 @@ public:
         return rect;
     }
 
-    void init() override{
-        std::cout << "[CameraComponent] Initialized at position :" << position << std::endl;
-    }
 };

@@ -40,10 +40,4 @@ public:
         return true;
     }
 
-    void init() override {
-        std::cout << "[CollisionComponent] Initialized - size: " 
-                  << width << "x" << height 
-                  << ", offset: (" << offset.x << ", " << offset.y << ")"
-                  << ", tag: " << tag << "\n";
-    }
 };

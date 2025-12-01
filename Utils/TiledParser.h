@@ -165,8 +165,6 @@ private:
                 if (propName == "renderOrder")
                 {
                     thisLayer.renderOrder = property->IntAttribute("value");
-                    std::cout << "[TiledParser] Layer '" << thisLayer.name
-                              << "' renderOrder: " << thisLayer.renderOrder << "\n";
                 }
                 property = property->NextSiblingElement("property");
             }
@@ -297,7 +295,6 @@ private:
         }
 
         SDL_FreeSurface(surface);
-        std::cout << "[Game] Texture load from :" << filepath << std::endl;
         return texture;
     }
 };

@@ -186,9 +186,6 @@ public:
         return mapHeight * tileHeight;
     }
 
-    void init() override {
-        std::cout << "[TileMapComponent] Initialized - Map Size: " << mapWidth << "x" << mapHeight << " (" << getMapWidthInPixels() << "x" << getMapHeightInPixels() <<" pixels)\n";
-        std::cout << "[TileMapComponent] Tilesets :" << tilesets.size() << ", layers: " << layers.size() << "\n"; 
-    }
+
 
 };
